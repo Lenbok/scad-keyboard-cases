@@ -1,0 +1,3 @@
+[submodule "Lenbok_Utils"]
+	path = Lenbok_Utils
+	url = git@github.com:Lenbok/scad-lenbok-utils.git
