@@ -54,7 +54,7 @@ module mini_usb_hole() {
 module modified_base() {
     difference() {
         union() {
-            rotate([0,0,180]) import("BottomR.sl.stl");
+            rotate([0,0,180]) import("orig/BottomR.stl");
             if (usb_interconnect) {
                 // Fill in TRRS hole, since we'll do something different
                 translate([-42, 61.426, base_chamfer]) cube([20, wall_thickness, base_height - base_chamfer - 0.1]);
