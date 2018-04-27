@@ -8,4 +8,8 @@ keyboard by MattDB. It is sort of a cross between an
 This repository uses OpenSCAD to make some modifications to the original STL to add
 tenting etc.
 
+When cloning, you need to make sure you get the submodules, e.g.:
+
+    git clone --recurse-submodules https://github.com/Lenbok/scad-redox-case.git
+
 Load the redox_body.scad into OpenSCAD, make any changes, and render the modified STL.
