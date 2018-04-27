@@ -41,13 +41,40 @@ module tent_support(position) {
     }
 }
 
+mini_usb_screw_rad = 2.4 / 2; // Smaller than M3 to tap into
+mini_usb_screw_sep = 20;
+mini_usb_hole_height = 7.5;
 module mini_usb_hole() {
-    mini_usb_screw_rad=2.4/2; // Smaller than M3 to tap into
-    mini_usb_screw_sep=20;
-    mini_usb_hole_height=7.5;
     translate([0, 0, mini_usb_hole_height/2])  rotate([90, 0, 0]) roundedcube([10, mini_usb_hole_height, 10], r=1.5, center=true, $fs=1);
     for (i = [-1,1], j = [0, 14]) {
         translate([i*mini_usb_screw_sep/2, -4-j, -5]) polyhole(r=mini_usb_screw_rad, h=10);
+    }
+}
+
+micro_usb_screw_dia = 3.0;
+micro_usb_screw_rad = (micro_usb_screw_dia - 0.6) / 2; // Smaller than M3 to tap into
+micro_usb_screw_sep = 9;
+micro_usb_hole_height = 7.5;
+micro_usb_socket_height = 2.9;
+pcb_thickness = 2;
+module micro_usb_hole() {
+    translate([0, 1, micro_usb_hole_height/2]) rotate([90, 0, 0]) roundedcube([11, micro_usb_hole_height, 10], r=1.5, center=true, $fs=1);
+    translate([0, -1.5, pcb_thickness + micro_usb_socket_height / 2]) rotate([90, 0, 0]) cube([7.5, micro_usb_socket_height, 10], r = 1.5, center = true, $fs = 1);
+    for (i = [-1,1]) {
+        translate([i * micro_usb_screw_sep/2, -8, -5]) polyhole(r = micro_usb_screw_rad, h=15);
+    }
+}
+
+// Print a couple of these to prevent heads of the mini-usb mounting screws from
+// hitting the mini-usb socket
+module micro_usb_bracket() {
+    height = micro_usb_socket_height + 0.25; // One layer above
+    difference() {
+        translate([0, 0, height/2])  roundedcube([micro_usb_screw_sep + 7, 7, height], center = true);
+        translate([0, 8, -pcb_thickness - 0.01]) micro_usb_hole();
+        for (i = [-1,1]) {
+            #translate([i * micro_usb_screw_sep/2, 0, 0]) polyhole(r = (micro_usb_screw_dia + 0.2) / 2, h = 15, center = true);
+        }
     }
 }
 
@@ -65,6 +92,7 @@ module modified_base() {
         }
         if (usb_interconnect) {
             translate([-28, 61.426, wall_thickness]) mini_usb_hole();
+            //translate([65.5, 61.426, wall_thickness]) micro_usb_hole();
         }
         // Hole to access reset microswitch
         #translate([40, 55.38, wall_thickness]) {
@@ -77,5 +105,8 @@ module modified_base() {
 //mirror([1, 0, 0])
 modified_base();
 
-// Requires my utility functions in your OpenSCAD lib https://cubehero.com/physibles/Lenbok/Lenbok_Utils
+//micro_usb_bracket();
+
+// Requires my utility functions in your OpenSCAD lib or as local submodule
+// https://github.com/Lenbok/scad-lenbok-utils.git
 use<Lenbok_Utils/utils.scad>
