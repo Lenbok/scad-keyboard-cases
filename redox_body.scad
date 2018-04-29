@@ -55,7 +55,7 @@ micro_usb_screw_dia = 3.0;
 micro_usb_screw_rad = (micro_usb_screw_dia - 0.6) / 2; // Smaller than M3 to tap into
 micro_usb_screw_sep = 9;
 micro_usb_hole_height = 7.5;
-micro_usb_socket_height = 2.9;
+micro_usb_socket_height = 2.5;
 pcb_thickness = 2;
 module micro_usb_hole() {
     translate([0, 1, micro_usb_hole_height/2]) rotate([90, 0, 0]) roundedcube([11, micro_usb_hole_height, 10], r=1.5, center=true, $fs=1);
@@ -73,7 +73,7 @@ module micro_usb_bracket() {
         translate([0, 0, height/2])  roundedcube([micro_usb_screw_sep + 7, 7, height], center = true);
         translate([0, 8, -pcb_thickness - 0.01]) micro_usb_hole();
         for (i = [-1,1]) {
-            #translate([i * micro_usb_screw_sep/2, 0, 0]) polyhole(r = (micro_usb_screw_dia + 0.2) / 2, h = 15, center = true);
+            translate([i * micro_usb_screw_sep/2, 0, 0]) polyhole(r = (micro_usb_screw_dia + 0.2) / 2, h = 15, center = true);
         }
     }
 }
