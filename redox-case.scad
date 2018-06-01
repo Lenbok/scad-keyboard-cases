@@ -131,10 +131,20 @@ module rev0b_bottom_case() {
     difference() {
         bottom_case(rev0b_screw_holes, rev0b_tent_positions) rev0b_outer_profile();
 
-        // Hole to access reset microswitch
-        translate([34, -8.45, 0.05]) rotate([0, 0, 8.8]) reset_microswitch();
-        translate([13, -6.5, 0]) rotate([0, 0, 4]) micro_usb_hole();
-        translate([130, -8, 0]) rotate([0, 0, -24]) mini_usb_hole();
+        // Case holes for connectors etc. The second version of each is just
+        // For preview view
+        translate([34, -8.45, 0.05]) rotate([0, 0, 8.8]) {
+            reset_microswitch();
+            %reset_microswitch(hole = false);
+        }
+        translate([13, -5.5, 0]) rotate([0, 0, 4]) {
+            micro_usb_hole();
+            %micro_usb_hole(hole = false);
+        }
+        translate([130.5, -7.5, 0]) rotate([0, 0, -24]) {
+            mini_usb_hole();
+            %mini_usb_hole(hole = false);
+        }
     }
 }
 
