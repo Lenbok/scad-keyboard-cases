@@ -81,6 +81,8 @@ module micro_usb_bracket() {
 // Make a mold for making an oogoo foot around the M5 nut heads.
 module foot_negative() {
     rotate([0, 90, 0]) {
+        // Nut trap to stop the bolt from being pushed out. Two half height nuts.
+        translate([0, 0, -1]) cylinder(r = nutRad + 0.75, h = 5.5, center = true, $fn=16);
         // actual bolt shaft
         polyhole(r = boltRad, h = 20, center = true);
         // show actual bolt head shape
@@ -98,9 +100,9 @@ module foot_mold() {
         mirror([m, 0, 0])
             translate([5, 0, 0])
             difference() {
-            translate([0, -10, 0])  cube([20, 65, height], center = false);
+            translate([0, -10, 0])  cube([25, 65, height], center = false);
             for (i = [0:3]) {
-                translate([0, i*15, height]) foot_negative();
+          #      translate([7, i*15, height]) foot_negative();
             }
     }
 }
