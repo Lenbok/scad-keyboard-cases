@@ -123,8 +123,8 @@ module rev0b_outer_profile() {
     offset(r = -4.5, chamfer = false, $fn = 20)
         polygon(b1);
 }
-module rev0b_top_case() {
-    top_case(left_keys, rev0b_screw_holes, chamfer_height = 5, chamfer_width = 2.5, raised = true) rev0b_outer_profile();
+module rev0b_top_case(raised = true) {
+    top_case(left_keys, rev0b_screw_holes, chamfer_height = raised ? 5 : 2.5, chamfer_width = 2.5, raised = raised) rev0b_outer_profile();
 }
 
 module rev0b_bottom_case() {
@@ -167,9 +167,12 @@ if (part == "outer") {
 } else if (part == "bottom0") {
     rev0_bottom_case();
 
-} else if (part == "top0b") {
-    rev0b_top_case();
+} else if (part == "top0b-raised") {
+    rev0b_top_case(true);
     
+} else if (part == "top0b") {
+    rev0b_top_case(false);
+
 } else if (part == "bottom0b") {
     rev0b_bottom_case();
 
