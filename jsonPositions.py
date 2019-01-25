@@ -6,6 +6,7 @@ import json
 parser = ArgumentParser(description="Convert keyboard-layout-editor.com data into \
 position/size data structure for OpenSCAD.")
 parser.add_argument('iname',nargs='?',default=None)
+parser.add_argument('--varname',nargs='?',default="key_layout")
 args = parser.parse_args()
 
 jsonFile  = open(args.iname,"r") if args.iname else sys.stdin
@@ -39,15 +40,15 @@ module position_key(key, unit = 19.05) {
         children();
 }
 """)
-print("key_layout = [");
+print("%s = [" % args.varname);
 
 for row in jsonLayout:
     if(isinstance(row, dict)):
         continue;
 
+    addY = 0
     for key in row:
         addX = 0
-        addY = 0
 
         if(isinstance(key, str)):
             print("    [[%s, %s], [%s, %s], [%s, [%s, %s]]], /* %s */" % (nextRotationX + currentX, nextRotationY + currentRowY + currentY, nextWidth, nextHeight, nextRotation, nextRotationX, nextRotationY, re.sub(r"\s+", ' / ', key)))

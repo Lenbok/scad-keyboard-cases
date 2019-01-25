@@ -6,7 +6,7 @@ $fs = $preview ? 5 : 2;
 bezier_precision = $preview ? 0.05 : 0.025;
 
 // Hacky way to select just the left hand keys from split iris/redox layout
-left_keys = [ for (i = key_layout) if (key_pos(i).x < 8) i ];
+left_keys = [ for (i = redox_layout) if (key_pos(i).x < 8) i ];
 
 /////////////////////////////////////////
 // Replicates the original Redox top case

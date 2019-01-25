@@ -6,7 +6,7 @@ $fs = $preview ? 5 : 2;
 bezier_precision = $preview ? 0.05 : 0.025;
 
 // Hacky way to select just the left hand keys from split iris/redox layout
-left_keys = [ for (i = key_layout) if (key_pos(i).x < 10) i ];
+left_keys = [ for (i = ergodox_layout) if (key_pos(i).x < 10) i ];
 
 /////////////////////////////////////////
 // Rudimentary ergodox case. Untested
