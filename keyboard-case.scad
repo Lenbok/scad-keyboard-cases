@@ -15,7 +15,7 @@ themes = [
     ["#73d373", "#bbbbff"],
     ["#252525", "#bbbbff"],
     ];
-theme = 3;
+theme = 2;
 keycap_color = themes[theme].x;
 case_color = themes[theme].y;
 
@@ -167,12 +167,12 @@ module screw_holes(screws, screw_depth = 8, screw_head_depth = plate_thickness +
 }
 
 // children should be a 2d polygon specifying the outer border of case
-module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_width) {
+module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_width, chamfer_faces = [false, true]) {
     screw_offset = 3;
     chamfer_w = chamfer_width == undef ? chamfer_height : chamfer_width;
     total_depth = plate_thickness + (raised ? top_case_raised_height : 0);
     color(case_color) difference() {
-        render() chamfer_extrude(height = total_depth, chamfer = chamfer_height, width = chamfer_w, faces = [false, true], $fn = 25) children();
+        render() chamfer_extrude(height = total_depth, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_faces, $fn = 25) children();
 
         translate([0, 0, screw_offset]) screw_holes(screws);
         translate([0, 0, plate_thickness]) key_holes(keys);
