@@ -1,6 +1,6 @@
 # A modified case for the Redox keyboard
 
-The [Redox](https://www.thingiverse.com/thing:2704567) keyboard is a DIY mechanical 
+The [Redox](https://github.com/mattdibi/redox-keyboard) keyboard is a DIY mechanical 
 keyboard by MattDB. It is sort of a cross between an 
 [Iris](https://keeb.io/products/iris-keyboard-split-ergonomic-keyboard) and an 
 [Ergodox](https://ergodox-ez.com/).
