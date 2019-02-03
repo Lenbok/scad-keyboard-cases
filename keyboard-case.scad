@@ -7,17 +7,18 @@ top_case_raised_height = 7.2 + 1; // Distance between plate and bottom of keycap
 bottom_case_height = 13;  // Enough room to house electonics
 wall_thickness = 2;     // Sides and bottom of case
 
-keyswitch_color = "#aa3333";
 themes = [
-    // Keycap   case
-    ["#130044", "#101010"],
-    ["#73d373", "#180054"],
-    ["#73d373", "#bbbbff"],
-    ["#252525", "#bbbbff"],
+    //    case,    keycap, keyswitch,  keystem
+    ["#101010", "#130044", "#222222", "#aa3333"],
+    ["#180054", "#73d373", "#222222", "#aa3333"],
+    ["#bbbbff", "#73d373", "#222222", "#aa3333"],
+    ["#9999bb", "#252525", "#cccccc", "#553333"],
     ];
-theme = 2;
-keycap_color = themes[theme].x;
-case_color = themes[theme].y;
+theme = 3;
+case_color = themes[theme].x;
+keycap_color = themes[theme].y;
+keyswitch_color = themes[theme].z;
+keystem_color = themes[theme][3];
 
 // Create a hole where a switch can be inserted. The top of the hole is at 0
 module switch_hole(size, depth = 5) {
@@ -37,14 +38,14 @@ module switch_hole(size, depth = 5) {
 module cherry_keyswitch() {
     cherry_switch_width = 14;
     cherry_switch_depth = 5.2;
-    color(keyswitch_color) translate([0, 0, 5]) {
+    color(keystem_color) translate([0, 0, 5]) {
         translate([0, 0, 0.5]) cube([7, 5.7, 1], center = true);
         translate([0, 0, 1 + 1.8])
             for (r = [0, 90])
                 rotate([0, 0, r])
                 cube([4.0, 1.2, 3.6], center = true);
     }
-    color("#222222") {
+    color(keyswitch_color) {
         hull() {
             translate([0, 0, 0.99]) linear_extrude(height = 0.01, center = false, convexity = 3) 
                 square([14, 14], center = true);
