@@ -168,12 +168,13 @@ module screw_holes(screws, screw_depth = 8, screw_head_depth = plate_thickness +
 }
 
 // children should be a 2d polygon specifying the outer border of case
-module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_width, chamfer_faces = [false, true]) {
+module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_width, chamfer_faces = true) {
     screw_offset = 3;
     chamfer_w = chamfer_width == undef ? chamfer_height : chamfer_width;
+    chamfer_f = chamfer_faces ? [false, true] : [false, false];
     total_depth = plate_thickness + (raised ? top_case_raised_height : 0);
     color(case_color) difference() {
-        render() chamfer_extrude(height = total_depth, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_faces, $fn = 25) children();
+        render() chamfer_extrude(height = total_depth, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_f, $fn = 25) children();
 
         translate([0, 0, screw_offset]) screw_holes(screws);
         translate([0, 0, plate_thickness]) key_holes(keys);
@@ -208,14 +209,15 @@ module tent_support(position) {
 }
 
 // children should be a 2d polygon specifying the outer border of case
-module bottom_case(screws, tent_positions = [], chamfer_height = 2.5, chamfer_width) {
+module bottom_case(screws, tent_positions = [], chamfer_height = 2.5, chamfer_width, chamfer_faces = true) {
     screw_offset = 3;
     screw_rad = 3;
     standoff_rad = 7 / 2;
     chamfer_w = chamfer_width == undef ? chamfer_height : chamfer_width;
+    chamfer_f = chamfer_faces ? [true, false] : [false, false];
     color(case_color) difference() {
         union() {
-            render() chamfer_extrude(height = bottom_case_height, chamfer = chamfer_height, width = chamfer_w, faces = [true, false], $fn = 25)
+            render() chamfer_extrude(height = bottom_case_height, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_f, $fn = 25)
                 children();
             for(tent = tent_positions) {
                 tent_support(tent);
