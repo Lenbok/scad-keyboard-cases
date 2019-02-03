@@ -231,7 +231,7 @@ module bottom_case(screws, tent_positions = [], chamfer_height = 2.5, chamfer_wi
             screw_positions(screws)
                 hull() {
                 translate([0, 0, bottom_case_height]) polyhole(r = standoff_rad, h = 0.1);
-                polyhole(r = standoff_rad + 2, h = 0.1);
+                polyhole(r = standoff_rad + 1, h = 0.1);
             }
         }
         
