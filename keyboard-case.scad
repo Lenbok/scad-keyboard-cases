@@ -6,6 +6,8 @@ plate_thickness = 4;   // Fairly thick for strength, ideally print this section 
 top_case_raised_height = 7.2 + 1; // Distance between plate and bottom of keycap plus a little extra, for raised top case
 bottom_case_height = 13;  // Enough room to house electonics
 wall_thickness = 2;     // Sides and bottom of case
+depth_offset = 0;       // How much of side wall to include below top plate
+standoff_rad = 7 / 2;
 
 themes = [
     //    case,    keycap, keyswitch,  keystem
@@ -35,6 +37,7 @@ module switch_hole(size, depth = 5) {
     }
 }
 
+// A keyswitch for preview purposes
 module cherry_keyswitch() {
     cherry_switch_width = 14;
     cherry_switch_depth = 5.2;
@@ -63,6 +66,7 @@ module cherry_keyswitch() {
     }
 }
 
+// Something roughly DSA-ish for preview purposes
 module simple_keycap(size) {
     color(keycap_color) translate([0, 0, 7.2]) hull() {
         linear_extrude(height = 0.01, center = false, convexity = 3)
@@ -174,8 +178,18 @@ module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_widt
     chamfer_f = chamfer_faces ? [false, true] : [false, false];
     total_depth = plate_thickness + (raised ? top_case_raised_height : 0);
     color(case_color) difference() {
-        render() chamfer_extrude(height = total_depth, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_f, $fn = 25) children();
+        render() translate([0, 0, -depth_offset]) chamfer_extrude(height = total_depth + depth_offset, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_f, $fn = 25) children();
 
+        difference() {
+            render() translate([0, 0, -depth_offset - 0.1])
+                chamfer_extrude(height = depth_offset + 0.1, chamfer = chamfer_height * 0.7, width = chamfer_w * 0.7, faces = [false, false], $fn = 25)
+                offset(delta = -wall_thickness) children();
+            screw_positions(screws)
+                hull() {
+                translate([0, 0, - depth_offset - 0.2]) polyhole(r = standoff_rad, h = 0.1);
+                polyhole(r = standoff_rad, h = 0.1);
+            }
+        }
         translate([0, 0, screw_offset]) screw_holes(screws);
         translate([0, 0, plate_thickness]) key_holes(keys);
     }
@@ -212,12 +226,11 @@ module tent_support(position) {
 module bottom_case(screws, tent_positions = [], chamfer_height = 2.5, chamfer_width, chamfer_faces = true) {
     screw_offset = 3;
     screw_rad = 3;
-    standoff_rad = 7 / 2;
     chamfer_w = chamfer_width == undef ? chamfer_height : chamfer_width;
     chamfer_f = chamfer_faces ? [true, false] : [false, false];
     color(case_color) difference() {
         union() {
-            render() chamfer_extrude(height = bottom_case_height, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_f, $fn = 25)
+            render() chamfer_extrude(height = bottom_case_height - depth_offset, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_f, $fn = 25)
                 children();
             for(tent = tent_positions) {
                 tent_support(tent);
@@ -226,11 +239,11 @@ module bottom_case(screws, tent_positions = [], chamfer_height = 2.5, chamfer_wi
         
         difference() {
             render() translate([0, 0, wall_thickness])
-                chamfer_extrude(height = bottom_case_height, chamfer = chamfer_height * 0.7, width = chamfer_w * 0.7, faces = [true, false], $fn = 25)
+                chamfer_extrude(height = bottom_case_height - depth_offset, chamfer = chamfer_height * 0.7, width = chamfer_w * 0.7, faces = [true, false], $fn = 25)
                 offset(delta = -wall_thickness) children();
             screw_positions(screws)
                 hull() {
-                translate([0, 0, bottom_case_height]) polyhole(r = standoff_rad, h = 0.1);
+                translate([0, 0, bottom_case_height - depth_offset]) polyhole(r = standoff_rad, h = 0.1);
                 polyhole(r = standoff_rad + 1, h = 0.1);
             }
         }
