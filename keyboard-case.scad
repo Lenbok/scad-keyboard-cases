@@ -25,9 +25,9 @@ keystem_color = themes[theme][3];
 
 // Create a hole where a switch can be inserted. The top of the hole is at 0
 module switch_hole(size, depth = 5) {
-    clip_recess_z = 1.5; // How far below the top the recess begins
+    clip_recess_z = 1.3; // How far below the top the recess begins
     clip_recess_x = 6; // How much of the side is taken up by the recess
-    clip_recess_y = 1.4; // How far in does the clip go
+    clip_recess_y = 1.0; // How far in does the clip go
     translate([0, 0, -depth]) {
         linear_extrude(height = depth + 0.01, center = false, convexity = 3)
             square([cherry_plate_width, cherry_plate_width], center = true);
