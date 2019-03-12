@@ -91,10 +91,8 @@ module case_switch_hole(size) {
 
 // For subtracting a hole in the bottom case for a microswitch
 module reset_microswitch(hole = true) {
-    translate([0, 0, wall_thickness]) {
-        color("#202020") cube([14, 6, 6], center = false);
-        color("red") translate([4, 0.01, 1])  cube([2, hole ? 10 : 7, 4], center = false);
-    }
+    color("#202020") cube([14, 6, 6], center = false);
+    color("red") translate([4, 0.01, 1])  cube([2, hole ? 10 : 7, 4], center = false);
 }
 
 // Typical mini USB breakout boards from e.g. Aliexpress
@@ -103,15 +101,13 @@ mini_usb_screw_rad = (mini_usb_screw_dia - 0.6) / 2; // Smaller than M3 to tap i
 mini_usb_screw_sep = 20;
 mini_usb_hole_height = 7.5;
 module mini_usb_hole(hole = true) {
-    translate([0, 0, wall_thickness + 0.05]) {
-        color("green") translate([0, -11, pcb_thickness/2]) cube([25.5, 19.5, pcb_thickness], center = true);
-        if (hole) {
-            translate([0, 0, mini_usb_hole_height/2])  rotate([90, 0, 0]) roundedcube([10, mini_usb_hole_height, 10], r=1.5, center=true, $fs=1);
-        }
-        color("silver") translate([0, -5, mini_usb_hole_height/2])  rotate([90, 0, 0]) cube([7.6, 3.7, 9.2], center=true, $fs=1);
-        for (i = [-1,1], j = [0, 14]) {
-            translate([i*mini_usb_screw_sep/2, -4-j, -5]) polyhole(r=mini_usb_screw_rad, h=10);
-        }
+    color("green") translate([0, -11, pcb_thickness/2]) cube([25.5, 19.5, pcb_thickness], center = true);
+    if (hole) {
+        translate([0, 0, mini_usb_hole_height/2])  rotate([90, 0, 0]) roundedcube([10, mini_usb_hole_height, 10], r=1.5, center=true, $fs=1);
+    }
+    color("silver") translate([0, -5, mini_usb_hole_height/2])  rotate([90, 0, 0]) cube([7.6, 3.7, 9.2], center=true, $fs=1);
+    for (i = [-1,1], j = [0, 14]) {
+        translate([i*mini_usb_screw_sep/2, -4-j, -5]) polyhole(r=mini_usb_screw_rad, h=10);
     }
 }
 
@@ -119,21 +115,20 @@ module mini_usb_hole(hole = true) {
 micro_usb_screw_dia = 3.0;
 micro_usb_screw_rad = (micro_usb_screw_dia - 0.6) / 2; // Smaller than M3 to tap into
 micro_usb_screw_sep = 9;
+micro_usb_hole_width = 11;
 micro_usb_hole_height = 7.5;
 micro_usb_socket_height = 2.5;
 pcb_thickness = 2;
 module micro_usb_hole(hole = true) {
-    translate([0, 0, wall_thickness + 0.01]) {
-        color("green") translate([0, -8, pcb_thickness/2]) cube([14, 14, pcb_thickness], center = true);
-        color("silver") {
-            if (hole) {
-                translate([0, 1, micro_usb_hole_height/2]) rotate([90, 0, 0]) roundedcube([11, micro_usb_hole_height, 10], r=1.5, center=true, $fs=1);
-            }
-            translate([0, -3, pcb_thickness + micro_usb_socket_height / 2]) rotate([90, 0, 0]) cube([7.5, micro_usb_socket_height, 7], center = true, $fs = 1);
+    color("green") translate([0, -8, pcb_thickness/2]) cube([14, 14, pcb_thickness], center = true);
+    color("silver") {
+        if (hole) {
+            translate([0, 1, pcb_thickness+micro_usb_socket_height/2]) rotate([90, 0, 0]) roundedcube([micro_usb_hole_width, micro_usb_hole_height, 10], r=1.5, center=true, $fs=1);
         }
-        for (i = [-1,1]) {
-            translate([i * micro_usb_screw_sep/2, -8, -5]) polyhole(r = micro_usb_screw_rad, h = 15);
-        }
+        translate([0, -3, pcb_thickness + micro_usb_socket_height / 2]) rotate([90, 0, 0]) cube([7.5, micro_usb_socket_height, 7], center = true, $fs = 1);
+    }
+    for (i = [-1,1]) {
+        translate([i * micro_usb_screw_sep/2, -8, -5]) polyhole(r = micro_usb_screw_rad, h = 15);
     }
 }
 
