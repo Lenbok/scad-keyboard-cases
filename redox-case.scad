@@ -38,10 +38,10 @@ rev0_reference_points = [
 rev0_screw_holes = [ for (p = rev0_reference_points) if (p.x != r0_x4) p];
 rev0_tent_positions = [
     // [X, Y, Angle]
-    [3.3, -89.0, 180],
-    [3.3, -13, 180],
-    [145.1, -13, 25],
-    [155.7, -108, -30],
+    [[3.3, -89.0], 180],
+    [[3.3, -13], 180],
+    [[145.1, -13], 25],
+    [[155.7, -108], -30],
     ];
 module rev0_outer_profile() {
     fillet(r = 5, $fn = 20)
@@ -100,10 +100,10 @@ rev0b_screw_holes = [
     ];
 rev0b_tent_positions = [
     // [X, Y, Angle]
-    [0.8, -18, 180],
-    [0.8, -91.0, 180],
-    [146.8, -25, 5],
-    [151.2, -117.3, -30],
+    [[0.8, -18], 180],
+    [[0.8, -91.0], 180],
+    [[146.8, -25], 5],
+    [[151.2, -117.3], -30],
     ];
 
       /* CONTROL              POINT                       CONTROL      */

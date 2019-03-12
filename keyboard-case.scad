@@ -39,9 +39,9 @@ module switch_hole(size, depth = 5) {
 }
 
 // A keyswitch for preview purposes
+cherry_switch_width = 14;
+cherry_switch_depth = 5.2;
 module cherry_keyswitch() {
-    cherry_switch_width = 14;
-    cherry_switch_depth = 5.2;
     color(keystem_color) translate([0, 0, 5]) {
         translate([0, 0, 0.5]) cube([7, 5.7, 1], center = true);
         translate([0, 0, 1 + 1.8])
@@ -173,16 +173,15 @@ tent_bolt_rad = 5 / 2;
 tent_nut_rad = 9.4 / 2;
 tent_nut_height = 3.5;
 tent_attachment_width = 35;
-module tent_support(position, lift = 0) {
+module tent_support(position, angle, height = bottom_case_height, lift = 0) {
     base_chamfer = 2.5;
-    off = apothem(tent_nut_rad, 6)+0.5;
-    height = bottom_case_height - lift;
-    translate([position[0], position[1], lift]) rotate([0, 0, position[2]]) {
+    off = apothem(tent_nut_rad, 6) + 0.5;
+    translate([position.x, position.y, lift]) rotate([0, 0, angle]) {
         difference() {
-            chamfer_extrude(height=height, chamfer=base_chamfer, faces = [true, false]) {
+            chamfer_extrude(height = height, chamfer = base_chamfer, faces = [true, false]) {
                 hull() {
-                    translate([-5,0]) square([0.1, tent_attachment_width], center=true);
-                    translate([off, 0]) circle(r=tent_bolt_rad+base_chamfer+1.5);
+                    translate([-6, 0]) square([0.1, tent_attachment_width], center = true);
+                    translate([off, 0]) circle(r = tent_bolt_rad + base_chamfer + 1.5);
                 }
             }
             //translate([-10,-20, -0.1]) cube([10-base_chamfer, 40, bottom_case_height+1], center=false);
@@ -196,8 +195,8 @@ module tent_support(position, lift = 0) {
 
 
 // children should be a 2d polygon specifying the outer border of case
-module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_width, chamfer_faces = true, tent_positions = []) {
-    screw_offset = 3;
+module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_width, chamfer_faces = true, tent_positions = [], standoffs = false) {
+    screw_offset = 0;
     chamfer_w = chamfer_width == undef ? chamfer_height : chamfer_width;
     chamfer_f = chamfer_faces ? [false, true] : [false, false];
     total_depth = plate_thickness + (raised ? top_case_raised_height : 0);
@@ -205,7 +204,7 @@ module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_widt
         union() {
             render() translate([0, 0, -depth_offset]) chamfer_extrude(height = total_depth + depth_offset, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_f, $fn = 25) children();
             translate([0, 0, -depth_offset]) for(tent = tent_positions) {
-                tent_support(tent);
+                tent_support(tent[0], tent[1], height = tent[2], lift = depth_offset + plate_thickness - tent[2]);
             }
         }
 
@@ -213,21 +212,22 @@ module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_widt
             render() translate([0, 0, -depth_offset - 0.1])
                 chamfer_extrude(height = depth_offset + 0.1, chamfer = chamfer_height * 0.7, width = chamfer_w * 0.7, faces = [false, false], $fn = 25)
                 offset(delta = -wall_thickness) children();
-            /* screw_positions(screws) */
-            /*     hull() { */
-            /*     translate([0, 0, - depth_offset - 0.2]) polyhole(r = standoff_rad, h = 0.1); */
-            /*     polyhole(r = standoff_rad, h = 0.1); */
-            /* } */
+            if (standoffs) {
+                screw_positions(screws)
+                    hull() {
+                    translate([0, 0, - depth_offset - 0.2]) polyhole(r = standoff_rad, h = 0.1);
+                    polyhole(r = standoff_rad, h = 0.1);
+                }
+            }
         }
-        translate([0, 0, screw_offset]) screw_holes(screws);
+        translate([0, 0, plate_thickness + screw_offset]) screw_holes(screws);
         translate([0, 0, plate_thickness]) key_holes(keys);
     }
 }
 
 
 // children should be a 2d polygon specifying the outer border of case
-module bottom_case(screws, tent_positions = [], chamfer_height = 2.5, chamfer_width, chamfer_faces = true) {
-    screw_offset = 3;
+module bottom_case(screws, tent_positions = [], chamfer_height = 2.5, chamfer_width, chamfer_faces = true, standoffs = true) {
     screw_rad = 3;
     chamfer_w = chamfer_width == undef ? chamfer_height : chamfer_width;
     chamfer_f = chamfer_faces ? [true, false] : [false, false];
@@ -236,7 +236,7 @@ module bottom_case(screws, tent_positions = [], chamfer_height = 2.5, chamfer_wi
             render() chamfer_extrude(height = bottom_case_height - depth_offset, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_f, $fn = 25)
                 children();
             for(tent = tent_positions) {
-                tent_support(tent);
+                tent_support(tent[0], tent[1], height = bottom_case_height);
             }
         }
         
@@ -244,10 +244,12 @@ module bottom_case(screws, tent_positions = [], chamfer_height = 2.5, chamfer_wi
             render() translate([0, 0, wall_thickness])
                 chamfer_extrude(height = bottom_case_height - depth_offset, chamfer = chamfer_height * 0.7, width = chamfer_w * 0.7, faces = [true, false], $fn = 25)
                 offset(delta = -wall_thickness) children();
-            screw_positions(screws)
-                hull() {
-                translate([0, 0, bottom_case_height - depth_offset]) polyhole(r = standoff_rad, h = 0.1);
-                polyhole(r = standoff_rad + 1, h = 0.1);
+            if (standoffs) {
+                screw_positions(screws)
+                    hull() {
+                    translate([0, 0, bottom_case_height - depth_offset]) polyhole(r = standoff_rad, h = 0.1);
+                    polyhole(r = standoff_rad + 1, h = 0.1);
+                }
             }
         }
         
