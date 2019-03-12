@@ -172,6 +172,34 @@ module screw_holes(screws, screw_depth = 8, screw_head_depth = plate_thickness +
     }
 }
 
+
+// M5 bolt tenting
+tent_bolt_rad = 5 / 2;
+tent_nut_rad = 9.4 / 2;
+tent_nut_height = 3.5;
+tent_attachment_width = 35;
+module tent_support(position, lift = 0) {
+    base_chamfer = 2.5;
+    off = apothem(tent_nut_rad, 6)+0.5;
+    height = bottom_case_height - lift;
+    translate([position[0], position[1], lift]) rotate([0, 0, position[2]]) {
+        difference() {
+            chamfer_extrude(height=height, chamfer=base_chamfer, faces = [true, false]) {
+                hull() {
+                    translate([-5,0]) square([0.1, tent_attachment_width], center=true);
+                    translate([off, 0]) circle(r=tent_bolt_rad+base_chamfer+1.5);
+                }
+            }
+            //translate([-10,-20, -0.1]) cube([10-base_chamfer, 40, bottom_case_height+1], center=false);
+            // Screw hole
+            translate([off, 0, -0.1]) polyhole(r=tent_bolt_rad, h=height+1);
+            // Nut hole
+            translate([off, 0, height-tent_nut_height]) rotate([0, 0, 60/2]) cylinder(r=tent_nut_rad, h=tent_nut_height+0.1, $fn=6);
+        }
+    }
+}
+
+
 // children should be a 2d polygon specifying the outer border of case
 module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_width, chamfer_faces = true, tent_positions = []) {
     screw_offset = 3;
@@ -201,32 +229,6 @@ module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_widt
     }
 }
 
-
-// M5 bolt tenting
-tent_bolt_rad = 5 / 2;
-tent_nut_rad = 9.4 / 2;
-tent_nut_height = 3.5;
-tent_attachment_width = 35;
-module tent_support(position, lift = 0) {
-    base_chamfer = 2.5;
-    off = apothem(tent_nut_rad, 6)+0.5;
-    height = bottom_case_height - lift;
-    translate([position[0], position[1], lift]) rotate([0, 0, position[2]]) {
-        difference() {
-            chamfer_extrude(height=height, chamfer=base_chamfer, faces = [true, false]) {
-                hull() {
-                    translate([-5,0]) square([0.1, tent_attachment_width], center=true);
-                    translate([off, 0]) circle(r=tent_bolt_rad+base_chamfer+1.5);
-                }
-            }
-            //translate([-10,-20, -0.1]) cube([10-base_chamfer, 40, bottom_case_height+1], center=false);
-            // Screw hole
-            translate([off, 0, -0.1]) polyhole(r=tent_bolt_rad, h=height+1);
-            // Nut hole
-            translate([off, 0, height-tent_nut_height]) rotate([0, 0, 60/2]) cylinder(r=tent_nut_rad, h=tent_nut_height+0.1, $fn=6);
-        }
-    }
-}
 
 // children should be a 2d polygon specifying the outer border of case
 module bottom_case(screws, tent_positions = [], chamfer_height = 2.5, chamfer_width, chamfer_faces = true) {
