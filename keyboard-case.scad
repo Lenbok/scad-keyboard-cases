@@ -107,7 +107,7 @@ module mini_usb_hole(hole = true) {
         if (hole) {
             translate([0, 0, mini_usb_hole_height/2])  rotate([90, 0, 0]) roundedcube([10, mini_usb_hole_height, 10], r=1.5, center=true, $fs=1);
         }
-        color("silver") translate([0, -5, mini_usb_hole_height/2])  rotate([90, 0, 0]) cube([7.6, 3.7, 9.2], r=1.5, center=true, $fs=1);
+        color("silver") translate([0, -5, mini_usb_hole_height/2])  rotate([90, 0, 0]) cube([7.6, 3.7, 9.2], center=true, $fs=1);
         for (i = [-1,1], j = [0, 14]) {
             translate([i*mini_usb_screw_sep/2, -4-j, -5]) polyhole(r=mini_usb_screw_rad, h=10);
         }
@@ -128,7 +128,7 @@ module micro_usb_hole(hole = true) {
             if (hole) {
                 translate([0, 1, micro_usb_hole_height/2]) rotate([90, 0, 0]) roundedcube([11, micro_usb_hole_height, 10], r=1.5, center=true, $fs=1);
             }
-            translate([0, -3, pcb_thickness + micro_usb_socket_height / 2]) rotate([90, 0, 0]) cube([7.5, micro_usb_socket_height, 7], r = 1.5, center = true, $fs = 1);
+            translate([0, -3, pcb_thickness + micro_usb_socket_height / 2]) rotate([90, 0, 0]) cube([7.5, micro_usb_socket_height, 7], center = true, $fs = 1);
         }
         for (i = [-1,1]) {
             translate([i * micro_usb_screw_sep/2, -8, -5]) polyhole(r = micro_usb_screw_rad, h = 15);
