@@ -8,6 +8,7 @@ bottom_case_height = 13;  // Enough room to house electonics
 wall_thickness = 2;     // Sides and bottom of case
 depth_offset = 0;       // How much of side wall to include below top plate
 standoff_rad = 7 / 2;
+screw_rad = 3.2 / 2;
 
 themes = [
     //    case,    keycap, keyswitch,  keystem
@@ -140,7 +141,7 @@ module micro_usb_hole(hole = true) {
 module key_positions(keys) {
     // Mirror because KLE has Y axis reversed
     mirror([0, 0, 1]) for (key = keys)
-        position_key(key)
+        position_key(key, unit = unit)
             children();
 }
 
@@ -148,7 +149,7 @@ module key_holes(keys, type = "both") {
     //echo("Number of keys:",len(keys));
     // Mirror because KLE has Y axis reversed
     mirror([0, 1, 0]) for (key = keys) {
-        position_key(key)
+        position_key(key, unit = unit)
             if (type == "both") {
                 case_switch_hole(key_size(key));
             } else if (type == "plate") {
@@ -167,28 +168,33 @@ module screw_positions(screws) {
 
 module screw_holes(screws, screw_depth = 8, screw_head_depth = plate_thickness + top_case_raised_height) {
     screw_positions(screws) {
-        mirror([0, 0, 1]) translate([0, 0, -screw_head_depth]) bolthole(r1=6/2, r2=3.2/2, h1=screw_head_depth, h2=screw_depth);
+        mirror([0, 0, 1]) translate([0, 0, -screw_head_depth]) bolthole(r1=6/2, r2=screw_rad/2, h1=screw_head_depth, h2=screw_depth);
     }
 }
 
 // children should be a 2d polygon specifying the outer border of case
-module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_width, chamfer_faces = true) {
+module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_width, chamfer_faces = true, tent_positions = []) {
     screw_offset = 3;
     chamfer_w = chamfer_width == undef ? chamfer_height : chamfer_width;
     chamfer_f = chamfer_faces ? [false, true] : [false, false];
     total_depth = plate_thickness + (raised ? top_case_raised_height : 0);
     color(case_color) difference() {
-        render() translate([0, 0, -depth_offset]) chamfer_extrude(height = total_depth + depth_offset, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_f, $fn = 25) children();
+        union() {
+            render() translate([0, 0, -depth_offset]) chamfer_extrude(height = total_depth + depth_offset, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_f, $fn = 25) children();
+            translate([0, 0, -depth_offset]) for(tent = tent_positions) {
+                tent_support(tent);
+            }
+        }
 
         difference() {
             render() translate([0, 0, -depth_offset - 0.1])
                 chamfer_extrude(height = depth_offset + 0.1, chamfer = chamfer_height * 0.7, width = chamfer_w * 0.7, faces = [false, false], $fn = 25)
                 offset(delta = -wall_thickness) children();
-            screw_positions(screws)
-                hull() {
-                translate([0, 0, - depth_offset - 0.2]) polyhole(r = standoff_rad, h = 0.1);
-                polyhole(r = standoff_rad, h = 0.1);
-            }
+            /* screw_positions(screws) */
+            /*     hull() { */
+            /*     translate([0, 0, - depth_offset - 0.2]) polyhole(r = standoff_rad, h = 0.1); */
+            /*     polyhole(r = standoff_rad, h = 0.1); */
+            /* } */
         }
         translate([0, 0, screw_offset]) screw_holes(screws);
         translate([0, 0, plate_thickness]) key_holes(keys);
@@ -197,27 +203,27 @@ module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_widt
 
 
 // M5 bolt tenting
-boltRad = 5 / 2;
-nutRad = 9.4 / 2;
-nutHeight = 3.5;
-module tent_support(position) {
+tent_bolt_rad = 5 / 2;
+tent_nut_rad = 9.4 / 2;
+tent_nut_height = 3.5;
+tent_attachment_width = 35;
+module tent_support(position, lift = 0) {
     base_chamfer = 2.5;
-    off = apothem(nutRad, 6)+0.5;
-    lift = 0;
+    off = apothem(tent_nut_rad, 6)+0.5;
     height = bottom_case_height - lift;
     translate([position[0], position[1], lift]) rotate([0, 0, position[2]]) {
         difference() {
             chamfer_extrude(height=height, chamfer=base_chamfer, faces = [true, false]) {
                 hull() {
-                    translate([-5,0]) square([0.1, 35], center=true);
-                    translate([off, 0]) circle(r=boltRad+base_chamfer+1.5);
+                    translate([-5,0]) square([0.1, tent_attachment_width], center=true);
+                    translate([off, 0]) circle(r=tent_bolt_rad+base_chamfer+1.5);
                 }
             }
             //translate([-10,-20, -0.1]) cube([10-base_chamfer, 40, bottom_case_height+1], center=false);
             // Screw hole
-            translate([off, 0, -0.1]) polyhole(r=boltRad, h=height+1);
+            translate([off, 0, -0.1]) polyhole(r=tent_bolt_rad, h=height+1);
             // Nut hole
-            translate([off, 0, height-nutHeight]) rotate([0, 0, 60/2]) cylinder(r=nutRad, h=nutHeight+0.1, $fn=6);
+            translate([off, 0, height-tent_nut_height]) rotate([0, 0, 60/2]) cylinder(r=tent_nut_rad, h=tent_nut_height+0.1, $fn=6);
         }
     }
 }
