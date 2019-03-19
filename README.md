@@ -1,28 +1,23 @@
-# A modified case for the Redox keyboard
+# OpenSCAD Mechanical Keyboard Cases
 
-The [Redox](https://github.com/mattdibi/redox-keyboard) keyboard is a DIY mechanical 
-keyboard by MattDB. It is sort of a cross between an 
-[Iris](https://keeb.io/products/iris-keyboard-split-ergonomic-keyboard) and an 
-[Ergodox](https://ergodox-ez.com/).
-
-This repository uses OpenSCAD to make some modifications to the original STL to add
-tenting etc, and also provides a new case generated in OpenSCAD from scratch.
+This repository uses OpenSCAD to make 3D-printable keyboard
+cases. Initially this was simple modifications to an existing case for
+the [Redox](https://github.com/mattdibi/redox-keyboard) handwire
+keyboard, but now also provides the possibility to make a new case
+generated in OpenSCAD from scratch.
 
 When cloning, you need to make sure you get the submodules, e.g.:
 
     git clone --recurse-submodules https://github.com/Lenbok/scad-redox-case.git
 
-## Modified version of the original case
 
-This was my first modification of the original handwire redox case. Load the
-`redox-body-mod.scad` into OpenSCAD, make any changes, and render the
-modified STL.
+## Modified Version Of The Original Case
 
-This one has been built by a few people, e.g: [by me](https://imgur.com/a/DzFYMhc), 
-and [a coworker](https://www.thingiverse.com/make:486818)
+Have a look in [redox-rev0-mod](redox-rev0-mod) for my modification of
+the original handwire Redox case.
 
 
-## Keyboard Case From Scratch
+## Keyboard Cases From Scratch
 
 I then wanted to design a new case for the Redox that was inspired both
 by the Redox Rev1 case and the Iris, and I thought it would be nice to
@@ -37,23 +32,19 @@ If you have another KLE JSON file you want to convert, run the included
 `jsonPositions.py` which spits out the key layout to a minimal OpenSCAD
 data structure along with some data access functions. E.g:
 
-    python3 jsonPositions.py <kle-examples/ergodox-layout.json >kle-examples/ergodox-layout.scad
+    python3 jsonPositions.py -v redox_layout <redox-rev0b/redox-layout.json >redox-rev0b/redox-layout.scad
 
-Then make a top level OpenSCAD that includes this along with `keyboard_case.scad`, e.g.:
+Where `-v redox_layout` designates the OpenSCAD variable name used to
+contain the layout data in the generated file.  Then make a top level
+OpenSCAD that includes this along with `keyboard_case.scad`, e.g.:
 
-    include <kle-examples/ergodox-layout.scad>
+    include <redox-rev0b/redox-layout.scad>
     include <keyboard_case.scad>
 
-Then to make a case, you just need to define a polygon describing the
+Then to make a case, you mostly just need to define a polygon describing the
 outer boundary of your desired case, a set of points for where to put
 case screw holes, and optional positions for tenting supports, and call
 the `top_case` and/or `bottom_case` modules. See the other cases here
 for examples (the Redox case is most developed):
 
-![redox-top](images/redox-top.png)
-
 ![redox-exploded](images/redox-exploded.png)
-
-![redox-completed](images/redox-completed.jpg)
-[album here](https://imgur.com/a/eEi0gJ1)
-

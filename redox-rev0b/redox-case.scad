@@ -1,5 +1,5 @@
-include <kle-examples/redox-layout.scad>
-include <keyboard-case.scad>
+include <kle/redox-layout.scad>
+include <../keyboard-case.scad>
 
 $fa = 1;
 $fs = $preview ? 5 : 2;
@@ -197,6 +197,6 @@ if (part == "outer") {
 
 // Requires my utility functions in your OpenSCAD lib or as local submodule
 // https://github.com/Lenbok/scad-lenbok-utils.git
-use<Lenbok_Utils/utils.scad>
+use<../Lenbok_Utils/utils.scad>
 // Requires bezier library from https://www.thingiverse.com/thing:2207518
-use<Lenbok_Utils/bezier.scad>
+use<../Lenbok_Utils/bezier.scad>

@@ -140,4 +140,4 @@ modified_base();
 
 // Requires my utility functions in your OpenSCAD lib or as local submodule
 // https://github.com/Lenbok/scad-lenbok-utils.git
-use<Lenbok_Utils/utils.scad>
+use<../Lenbok_Utils/utils.scad>
