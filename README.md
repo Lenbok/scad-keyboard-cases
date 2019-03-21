@@ -28,6 +28,8 @@ going from KLE JSON to OpenSCAD didn't work for split keyboards where
 some keys are rotated, so an updated tool is provided here that seems to
 work on the split keyboards I have tried.
 
+Examples: [Redox](redox-rev0b) and [Corne](crkbd) keyboards.
+
 If you have another KLE JSON file you want to convert, run the included
 `jsonPositions.py` which spits out the key layout to a minimal OpenSCAD
 data structure along with some data access functions. E.g:

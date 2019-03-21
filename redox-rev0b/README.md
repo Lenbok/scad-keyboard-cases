@@ -1,4 +1,4 @@
-## Redox keyboard Case From Scratch
+## Redox Keyboard Case From Scratch
 
 I wanted to design a new case for the Redox that was inspired both
 by the Redox Rev1 case and the Iris, and I thought it would be nice to
