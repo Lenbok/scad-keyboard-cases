@@ -77,21 +77,29 @@ module crkbd_outer_profile(expand = 4) {
     crkbd_left_bottom();
 }
 
+module simple_micro_usb_hole(hole = true) {
+    color("silver") {
+        if (hole) {
+            translate([0, 1, pcb_thickness+micro_usb_socket_height/2]) rotate([90, 0, 0]) roundedcube([micro_usb_hole_width, micro_usb_hole_height, 10], r=1.5, center=true, $fs=1);
+        }
+    }
+}
+
 module crkbd_case_holes(preview = false) {
     // Case holes for connectors etc. The second version of each is just for preview view
     pcb_offset = plate_thickness - cherry_switch_depth - pcb_thickness;
     // pcb_offset is nominally bottom of crkbd PCB
            translate([135, -25.1, pcb_offset]) translate([0, 0, 2 * pcb_thickness]) {
-        micro_usb_hole();
+               simple_micro_usb_hole();
         if (preview) {
-            %micro_usb_hole(hole = false);
+            %simple_micro_usb_hole(hole = false);
         }
     }
     // TRRS connector - should update to a better shape hole
     translate([145, -73.5, pcb_offset]) translate([0, 0, 2 * pcb_thickness]) rotate([0, 0, -90]) {
-        micro_usb_hole();
+        simple_micro_usb_hole();
         if (preview) {
-            %micro_usb_hole(hole = false);
+            %simple_micro_usb_hole(hole = false);
         }
     }
     if (preview) {
@@ -107,7 +115,12 @@ module crkbd_top_case(raised = raised) {
         translate([0, 0, 0]) crkbd_case_holes();
         translate([0, 0, -1]) linear_extrude(height = 30, center = false, convexity = 3) 
             //offset(delta = 1, chamfer = false, $fn = 20) // Delta gives sharp interiors
+            difference() {
             crkbd_left_top_window();
+            // Ensure some removable supports
+            for (y = [-31, -47, -65]) translate([100, y]) square([100, 1.2], center = false);
+
+        }
     }
 }
 module crkbd_bottom_case(raised = raised) {
@@ -137,8 +150,8 @@ if (part == "outer") {
     #key_holes(left_keys, "plate");
     
 } else if (part == "top") {
-    rotate([180, 0, 0]) 
-        translate([-80, 60, -plate_thickness])
+    rotate([180, 0, 90]) translate([0, 0, -plate_thickness])
+        translate([-80, 60, 0])
         render() crkbd_top_case();
     //%translate([0, 0, plate_thickness + -7 * explode]) key_holes(left_keys, "keycap");
 
