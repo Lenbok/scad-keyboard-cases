@@ -2,7 +2,7 @@
 include <kle/crkbd-layout.scad>
 include <../keyboard-case.scad>
 
-unit = 19.02;
+unit = 19.015;    //Manually adjusted to get best fit on my printer
 scaletweak = (unit / 19.05);
 
 theme = 3;
