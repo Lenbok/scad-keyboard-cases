@@ -7,7 +7,7 @@ scaletweak = (unit / 19.05);
 
 theme = 3;
 wall_thickness = 2.5;
-plate_thickness = 3.2;   // 5mm - max diode height
+plate_thickness = 3.2;   // (5mm - max diode height)
 depth_offset = 5 + 2 + 2;       // How much of side wall to include below top plate
 bottom_case_height = 5 + 2 + 2; // 11;  // Enough room to house electonics
 screw_rad = 2.2 / 2;
@@ -23,19 +23,10 @@ bezier_precision = $preview ? 0.1 : 0.025;
 left_keys = [ for (i = crkbd_layout) if (key_pos(i).x < 8) i ];
 
 ///////////////////////////////////////////////////
-// Not-so-minidox-ish case with bezier based curved outlines
+// Simple Tented Corne Keyboard case
 ///////////////////////////////////////////////////
 
 pos_x1 = 28.55;
-pos_x2 = 72.0;
-pos_x3 = 148.3;
-pos_y3 = -79.95;
-pos_x6 = 131.0;
-pos_y6 = -110.0;
-pos_x4 = 132.8;
-pos_y4 = -106.8;
-pos_x5 = 118.65;
-
 crkbd_screw_holes = [
     scaletweak * [pos_x1, -64.4],           // Bottom left
     scaletweak * [pos_x1, -45.3],           // Top left
@@ -52,7 +43,7 @@ crkbd_tent_positions = [
     [[scaletweak * 140, scaletweak * -102], -30, depth_offset + plate_thickness],
     ];
 
-// This is so annoying, the SVG had the wrong scale
+// This is so annoying, the SVG had the wrong scale, but direct import from the foostan dxf files didn't work.
 svg_scale=0.755*scaletweak;
 module crkbd_left_top() {
     scale([svg_scale, svg_scale, 0]) 
@@ -70,9 +61,7 @@ module crkbd_left_bottom() {
     import(file = "orig/crkbd-left-bottom.svg");
 }
 module crkbd_outer_profile(expand = 4) {
-    //offset(r = 5, chamfer = false, $fn = 20) // Purposely slightly larger than the negative offset below
     offset(r = expand, chamfer = false, $fn = 20)
-    /*     offset(delta = -4.5, chamfer = false, $fn = 20) // Delta gives sharp interiors */
     offset(delta = 1, chamfer = false, $fn = 20) // Delta gives sharp interiors
     crkbd_left_bottom();
 }
@@ -112,7 +101,7 @@ module crkbd_top_case(raised = raised) {
     difference() {
         top_case(left_keys, crkbd_screw_holes, chamfer_faces = true, chamfer_height = raised ? 5 : 2, chamfer_width = 2, raised = raised, tent_positions = crkbd_tent_positions)
             crkbd_outer_profile(raised ? 3 : 2);
-        translate([0, 0, 0]) crkbd_case_holes();
+        translate([0, 0, 0]) crkbd_case_holes(true);
         translate([0, 0, -1]) linear_extrude(height = 30, center = false, convexity = 3) 
             //offset(delta = 1, chamfer = false, $fn = 20) // Delta gives sharp interiors
             difference() {
@@ -123,6 +112,7 @@ module crkbd_top_case(raised = raised) {
         }
     }
 }
+
 module crkbd_bottom_case(raised = raised) {
     difference() {
         color(case_color) linear_extrude(height = wall_thickness, center = false, convexity = 3) crkbd_left_bottom();
@@ -131,12 +121,12 @@ module crkbd_bottom_case(raised = raised) {
 }
 
 
-part = "top";
-explode = 0;
+part = "assembly";
+explode = 0.5;
 depressed = true;
 raised = false;
 
-if (part == "outer") {
+if (part == "outer") { // To preview the outer profile, key hole, and screw hole positions
     /* offset(r = -2.5) // Where top of camber would come to */
     color("gray") translate([0, 0, -5.1]) crkbd_left_bottom();
     translate([0, 0, -5]) crkbd_left_top();
@@ -158,7 +148,7 @@ if (part == "outer") {
 } else if (part == "bottom") {
     crkbd_bottom_case();
 
-} else if (part == "assembly") {
+} else if (part == "assembly") translate([-80, 60, 0]) {
     %translate([0, 0, plate_thickness - (depressed ? 4 : 0) + 30 * explode]) key_holes(left_keys, "keycap");
     %translate([0, 0, plate_thickness + 20 * explode]) key_holes(left_keys, "switch");
     crkbd_top_case();
@@ -169,5 +159,3 @@ if (part == "outer") {
 // Requires my utility functions in your OpenSCAD lib or as local submodule
 // https://github.com/Lenbok/scad-lenbok-utils.git
 use<../Lenbok_Utils/utils.scad>
-// Requires bezier library from https://www.thingiverse.com/thing:2207518
-use<../Lenbok_Utils/bezier.scad>
