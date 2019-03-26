@@ -135,7 +135,7 @@ module micro_usb_hole(hole = true) {
 // You can use this for things that don't need to vary each child according to the key (e.g. size)
 module key_positions(keys) {
     // Mirror because KLE has Y axis reversed
-    mirror([0, 0, 1]) for (key = keys)
+    mirror([0, 1, 0]) for (key = keys)
         position_key(key, unit = unit)
             children();
 }
