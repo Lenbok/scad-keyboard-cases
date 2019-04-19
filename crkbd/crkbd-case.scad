@@ -2,9 +2,6 @@
 include <kle/crkbd-layout.scad>
 include <../keyboard-case.scad>
 
-unit = 19.015;    //Manually adjusted to get best fit on my printer
-scaletweak = (unit / 19.05);
-
 theme = 3;
 wall_thickness = 2.5;
 plate_thickness = 3.2;   // (5mm - max diode height)
@@ -28,23 +25,23 @@ left_keys = [ for (i = crkbd_layout) if (key_pos(i).x < 8) i ];
 
 pos_x1 = 28.55;
 crkbd_screw_holes = [
-    scaletweak * [pos_x1, -64.4],           // Bottom left
-    scaletweak * [pos_x1, -45.3],           // Top left
-    scaletweak * [72.0,  -81.6],          // Bottom mid
-    scaletweak * [104.89,  -41.7],             // Top right
-    scaletweak * [118.7,  -89.37],          // Bottom right
+    [pos_x1, -64.4],           // Bottom left
+    [pos_x1, -45.3],           // Top left
+    [72.0, -81.6],          // Bottom mid
+    [104.89, -41.7],             // Top right
+    [118.7, -89.37],          // Bottom right
     ];
 
 crkbd_tent_positions = [
     // [[X, Y], Angle, height]
-    [[scaletweak * 4.8, scaletweak * -32.2], 180, depth_offset],
-    [[scaletweak * 4.8, scaletweak * -77.0], 180, depth_offset],
-    [[scaletweak * 115.5, scaletweak * -19.4], 90, depth_offset + plate_thickness],
-    [[scaletweak * 140, scaletweak * -102], -30, depth_offset + plate_thickness],
+    [[4.8, -32.2], 180, depth_offset],
+    [[4.8, -77.0], 180, depth_offset],
+    [[115.5, -19.4], 90, depth_offset + plate_thickness],
+    [[140, -102], -30, depth_offset + plate_thickness],
     ];
 
 // This is so annoying, the SVG had the wrong scale, but direct import from the foostan dxf files didn't work.
-svg_scale=0.755*scaletweak;
+svg_scale=0.755;
 module crkbd_left_top() {
     scale([svg_scale, svg_scale, 0]) 
     translate([6, -139.5]) 
@@ -73,22 +70,30 @@ module simple_micro_usb_hole(hole = true) {
         }
     }
 }
+module simple_trrs_hole(hole = true) {
+    color("silver") {
+        if (hole) {
+            translate([0, 1, pcb_thickness+micro_usb_socket_height/2]) rotate([90, 0, 0])
+                roundedcube([micro_usb_hole_width, micro_usb_hole_height, 10], r=1.5, center=true, $fs=1);
+        }
+    }
+}
 
 module crkbd_case_holes(preview = false) {
     // Case holes for connectors etc. The second version of each is just for preview view
     pcb_offset = plate_thickness - cherry_switch_depth - pcb_thickness;
     // pcb_offset is nominally bottom of crkbd PCB
-           translate([135, -25.1, pcb_offset]) translate([0, 0, 2 * pcb_thickness]) {
-               simple_micro_usb_hole();
+    translate([133.5, -25.1, pcb_offset]) translate([0, 0, 2 * pcb_thickness]) {
+        simple_micro_usb_hole();
         if (preview) {
             %simple_micro_usb_hole(hole = false);
         }
     }
     // TRRS connector - should update to a better shape hole
-    translate([145, -73.5, pcb_offset]) translate([0, 0, 2 * pcb_thickness]) rotate([0, 0, -90]) {
-        simple_micro_usb_hole();
+    translate([145, -74.5, pcb_offset]) translate([0, 0, pcb_thickness]) rotate([0, 0, -90]) {
+        simple_trrs_hole();
         if (preview) {
-            %simple_micro_usb_hole(hole = false);
+            %simple_trrs_hole(hole = false);
         }
     }
     if (preview) {
@@ -140,13 +145,13 @@ if (part == "outer") { // To preview the outer profile, key hole, and screw hole
     #key_holes(left_keys, "plate");
     
 } else if (part == "top") {
-    rotate([180, 0, 90]) translate([0, 0, -plate_thickness])
-        translate([-80, 60, 0])
+    rotate([180, 0, 90]) translate([0, 0, -plate_thickness]) translate([-80, 60, 0])
         render() crkbd_top_case();
     //%translate([0, 0, plate_thickness + -7 * explode]) key_holes(left_keys, "keycap");
 
 } else if (part == "bottom") {
-    crkbd_bottom_case();
+    rotate([180, 0, 90]) translate([0, 0, -plate_thickness]) translate([-80, 60, 0])
+        crkbd_bottom_case();
 
 } else if (part == "assembly") translate([-80, 60, 0]) {
     %translate([0, 0, plate_thickness - (depressed ? 4 : 0) + 30 * explode]) key_holes(left_keys, "keycap");
