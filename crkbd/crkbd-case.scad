@@ -57,9 +57,13 @@ module crkbd_left_bottom() {
     translate([11.9, -136.8])
     import(file = "orig/crkbd-left-bottom.svg");
 }
+module crkbd_expand_profile(expand = 4) {
+    offset(r = expand, chamfer = false, $fn = 40)
+    offset(delta = 1, chamfer = false, $fn = 40) // Delta gives sharp interiors
+    children();
+}
 module crkbd_outer_profile(expand = 4) {
-    offset(r = expand, chamfer = false, $fn = 20)
-    offset(delta = 1, chamfer = false, $fn = 20) // Delta gives sharp interiors
+    crkbd_expand_profile(expand)
     crkbd_left_bottom();
 }
 
@@ -125,6 +129,105 @@ module crkbd_bottom_case(raised = raised) {
     }
 }
 
+holder_offset = [9.685, -112.5, 0];
+module crkbd_holder_profile() {
+    translate(holder_offset) square([119.7, 30], center = false);
+}
+
+module crkbd_carrier_profile(expand = 4, holder = false) {
+    crkbd_outer_profile(expand);
+    crkbd_expand_profile(expand) {
+        // Space for magnetic micro usb plug
+        translate([129, -33.3]) square([11, 10], center = false);
+        // Compartment for cables, tent legs etc
+        if (holder) {
+            crkbd_holder_profile();
+        }
+    }
+}
+
+module crkbd_carrier_inset() {
+    tolerance = 0.3;
+    for (m = [0, 1]) mirror([0, 0, m]) translate([0, 0, -3.5]) difference() {
+        render() chamfer_extrude(height = 4, chamfer = 2, width = 2, faces = [false, false], $fn = 25)
+            difference() {
+            crkbd_outer_profile(2 + tolerance + 0.1);
+            crkbd_outer_profile(tolerance);
+        }
+        translate([0, 0, -1.5]) render() chamfer_extrude(height = 5, chamfer = 2, width = 2, faces = [false, true], $fn = 25)
+            crkbd_outer_profile(2 + tolerance);
+        translate([127, -30.3, -5]) cube([18, 10, 10], center = false);
+        translate([140, -83.5, -5]) cube([10, 18, 10], center = false);
+
+   }
+}
+
+door_thickness = 4.2;
+module crkbd_carrier_door(offset = 0, scoop = false) {
+    dth = door_thickness * 0.707;
+    door_length = 50 + offset;
+        difference() {
+        linear_extrude(height = door_length) {
+            offset(delta = offset, chamfer = false) 
+            hull() {
+                for (i = [-1, 1]) translate([0, i*10]) rotate([0, 0, 45]) square(dth, center = true);
+            }
+        }
+        if (scoop) {
+            thumb_r = 8;
+            translate([-door_thickness / 2, 0, 5]) difference() {
+                scale([2.5/thumb_r, 1, 1])  sphere(r = thumb_r, $fn = 20);
+                translate([-100, -100, -100])  cube([200, 200, 100], center = false);
+            }
+            for (i = [-1, 1]) translate([0, i * (10 + door_thickness / 2), door_length])
+            rotate([0, 90, 0]) rotate([0, 0, 45]) cube([dth, dth, 10], center = true);
+        }
+    }
+}
+// A simple carrier that accepts both keyboard halves and protects the keys.
+// Could be extended with latches and a space to keep cables.
+module crkbd_carrier() {
+    tolerance = 0.4;
+    case_thickness = 4;
+    separation = 17; // key height. 15mm min, maybe allow extra for cables or tall keycaps
+    tot_height = bottom_case_height + plate_thickness;
+    case_height = 2 * (separation + tot_height);
+    translate([0, 0, tot_height]) difference() {
+        translate([0, 0, separation]) for (m = [0, 1]) mirror([0, 0, m]) translate([0, 0, -separation]) difference() {
+                // Main outer profile less main hole for crkbd keyboard
+                translate([0, 0, -tot_height])
+                    linear_extrude(height = tot_height + separation, center = false, convexity = 3)
+                    difference() {
+                    crkbd_carrier_profile(2 + case_thickness + tolerance, true);
+                    crkbd_carrier_profile(2 + tolerance);
+                }
+                // Hollow out leg storage compartment
+                translate([0, 0, -tot_height + 2])
+                    linear_extrude(height = tot_height + separation, center = false, convexity = 3)
+                    difference() {
+                    crkbd_expand_profile(2 + tolerance) crkbd_holder_profile();
+                    crkbd_carrier_profile(2 + case_thickness + tolerance, false);
+                }
+                // Slots for tent supports
+                translate([0, 0, -tot_height/2-0.1]) for(tent = crkbd_tent_positions) {
+                    tent_position = tent[0];
+                    tent_angle = tent[1];
+                    tent_height = tent[2];
+                    translate([tent_position.x, tent_position.y, 0]) rotate([0, 0, tent_angle]) {
+                        hull() {
+                            translate([-2.5, 0, 0]) cube([0.1, tent_attachment_width, tot_height], center = true);
+                            translate([10, 0, 0]) cube([0.1, tent_attachment_width*0.8, tot_height], center = true);
+                        }
+                    }
+                }
+            }
+        translate(holder_offset - [5.45, -10, bottom_case_height + plate_thickness + 0.1])
+        crkbd_carrier_door();
+    }
+    //translate([0, 0, 0]) render() crkbd_carrier_inset();
+//            translate(holder_offset-[6, 10, 0]) cube([39, 20, 50], center = false);
+}
+
 
 part = "assembly";
 explode = 0.5;
@@ -152,6 +255,16 @@ if (part == "outer") { // To preview the outer profile, key hole, and screw hole
 } else if (part == "bottom") {
     rotate([180, 0, 90]) translate([0, 0, -plate_thickness]) translate([-80, 60, 0])
         crkbd_bottom_case();
+
+} else if (part == "carrier") {
+    rotate([0, 0, 90]) translate([-80, 60, 0])
+    crkbd_carrier();
+
+} else if (part == "carrier-door") {
+    tol = 0.3; // Tolerance to allow door to slide in the hole, adjust as needed.
+    translate([-20, 0, door_thickness / 2 -  tol])
+    rotate([0, 90, 0])
+        crkbd_carrier_door(offset = -tol, scoop = true);
 
 } else if (part == "assembly") translate([-80, 60, 0]) {
     %translate([0, 0, plate_thickness - (depressed ? 4 : 0) + 30 * explode]) key_holes(left_keys, "keycap");
