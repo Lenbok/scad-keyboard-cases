@@ -44,17 +44,17 @@ crkbd_tent_positions = [
 svg_scale=0.755;
 module crkbd_left_top() {
     scale([svg_scale, svg_scale, 0]) 
-    translate([6, -139.5]) 
+    translate([12, -129.5])
     import(file = "orig/crkbd-left-top.svg");
 }
 module crkbd_left_top_window() {
     scale([svg_scale, svg_scale, 0]) 
-    translate([2, -99.3]) 
+    translate([163, -83.3])
     import(file = "orig/crkbd-left-top-window.svg");
 }
 module crkbd_left_bottom() {
     scale([svg_scale, svg_scale, 0]) 
-    translate([5.9, -142.8]) 
+    translate([11.9, -136.8])
     import(file = "orig/crkbd-left-bottom.svg");
 }
 module crkbd_outer_profile(expand = 4) {
