@@ -24,17 +24,18 @@ keyswitch_color = themes[theme].z;
 keystem_color = themes[theme][3];
 
 // Create a hole where a switch can be inserted. The top of the hole is at 0
+cherry_clip_recess_z = 1.3; // How far below the top the recess begins
+cherry_clip_recess_width = 6; // How much of the side is taken up by the recess
+cherry_clip_recess_depth = 1.0; // How far in does the clip go
+cherry_clip_recess_height = 4.0; // How far down clip recess go
 module switch_hole(size, depth = 5) {
-    clip_recess_z = 1.3; // How far below the top the recess begins
-    clip_recess_x = 6; // How much of the side is taken up by the recess
-    clip_recess_y = 1.0; // How far in does the clip go
     translate([0, 0, -depth]) {
         linear_extrude(height = depth + 0.01, center = false, convexity = 3)
             square([cherry_plate_width, cherry_plate_width], center = true);
-        linear_extrude(height = depth - clip_recess_z, center = false, convexity = 3)
+        translate([0, 0, depth - cherry_clip_recess_z - cherry_clip_recess_height]) linear_extrude(height = cherry_clip_recess_height, center = false, convexity = 3)
             for (r = [0, 90])
                 rotate([0, 0, r])
-                    square([cherry_plate_width + 2 * clip_recess_y, clip_recess_x], center = true);
+                    square([cherry_plate_width + 2 * cherry_clip_recess_depth, cherry_clip_recess_width], center = true);
     }
 }
 
