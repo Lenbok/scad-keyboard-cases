@@ -239,22 +239,23 @@ module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_widt
 
 
 // children should be a 2d polygon specifying the outer border of case
-module bottom_case(screws, tent_positions = [], chamfer_height = 2.5, chamfer_width, chamfer_faces = true, standoffs = true) {
+module bottom_case(screws, tent_positions = [], raised = false, chamfer_height = 2.5, chamfer_width, chamfer_faces = [true, false], standoffs = true) {
     screw_rad = 3;
     chamfer_w = chamfer_width == undef ? chamfer_height : chamfer_width;
-    chamfer_f = chamfer_faces ? [true, false] : [false, false];
+    wall_height = bottom_case_height - depth_offset + (raised ? plate_thickness + top_case_raised_height : 0);
     color(case_color) difference() {
         union() {
-            render() chamfer_extrude(height = bottom_case_height - depth_offset, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_f, $fn = 25)
+            render() chamfer_extrude(height = wall_height, chamfer = chamfer_height, width = chamfer_w, faces = chamfer_faces, $fn = 25)
                 children();
             for(tent = tent_positions) {
-                tent_support(tent[0], tent[1], height = bottom_case_height);
+                lift = len(tent) > 3 ? tent[3] : 0;
+                tent_support(tent[0], tent[1], height = tent[2], lift = lift);
             }
         }
         
         difference() {
             render() translate([0, 0, wall_thickness])
-                chamfer_extrude(height = bottom_case_height - depth_offset, chamfer = chamfer_height * 0.7, width = chamfer_w * 0.7, faces = [true, false], $fn = 25)
+                chamfer_extrude(height = wall_height, chamfer = chamfer_height * 0.7, width = chamfer_w * 0.7, faces = [true, false], $fn = 25)
                 offset(delta = -wall_thickness) children();
             if (standoffs) {
                 screw_positions(screws)
