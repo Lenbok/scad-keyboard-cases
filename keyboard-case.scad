@@ -195,6 +195,17 @@ module tent_support(position, angle, height = bottom_case_height, lift = 0) {
 
 
 // children should be a 2d polygon specifying the outer border of case
+module top_plate(keys, screws) {
+    screw_offset = -1.0;
+    total_depth = plate_thickness;
+    color(case_color) difference() {
+        render() linear_extrude(height = total_depth, $fn = 25) children();
+        translate([0, 0, plate_thickness + screw_offset]) screw_holes(screws);
+        translate([0, 0, plate_thickness]) key_holes(keys);
+    }
+}
+
+// children should be a 2d polygon specifying the outer border of case
 module top_case(keys, screws, raised = false, chamfer_height = 2.5, chamfer_width, chamfer_faces = true, tent_positions = [], standoffs = false) {
     screw_offset = 0;
     chamfer_w = chamfer_width == undef ? chamfer_height : chamfer_width;
