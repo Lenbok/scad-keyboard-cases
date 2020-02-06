@@ -1,5 +1,5 @@
-include <kle-examples/ergodox-layout.scad>
-include <keyboard-case.scad>
+include <kle/ergodox-layout.scad>
+include <../keyboard-case.scad>
 
 $fa = 1;
 $fs = $preview ? 5 : 2;
