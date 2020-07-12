@@ -1,5 +1,12 @@
-// http://www.keyboard-layout-editor.com/#/gists/62e7fc79758227cd0ca7efae1afebd99
-include <kle/crkbd-layout.scad>
+///////////////////////////////////////////////////
+// Simple Tented Corne Keyboard case
+//
+// * Single piece combined top plate/outer/tent supports
+// * Simple flat transparent bottom (or cut from acrylic)
+//
+///////////////////////////////////////////////////
+
+include <crkbd-common.scad>
 include <../keyboard-case.scad>
 
 theme = 3;
@@ -19,19 +26,6 @@ bezier_precision = $preview ? 0.1 : 0.025;
 // Hacky way to select just the left hand keys from a split layout
 left_keys = [ for (i = crkbd_layout) if (key_pos(i).x < 8) i ];
 
-///////////////////////////////////////////////////
-// Simple Tented Corne Keyboard case
-///////////////////////////////////////////////////
-
-pos_x1 = 28.55;
-crkbd_screw_holes = [
-    [pos_x1, -64.4],           // Bottom left
-    [pos_x1, -45.3],           // Top left
-    [72.0, -81.6],          // Bottom mid
-    [104.89, -41.7],             // Top right
-    [118.7, -89.37],          // Bottom right
-    ];
-
 crkbd_tent_positions = [
     // [[X, Y], Angle, height]
     [[4.8, -32.2], 180, depth_offset],
@@ -40,32 +34,6 @@ crkbd_tent_positions = [
     [[140, -102], -30, depth_offset + plate_thickness],
     ];
 
-// This is so annoying, the SVG had the wrong scale, but direct import from the foostan dxf files didn't work.
-svg_scale=0.755;
-module crkbd_left_top() {
-    scale([svg_scale, svg_scale, 0]) 
-    translate([12, -129.5])
-    import(file = "orig/crkbd-left-top.svg");
-}
-module crkbd_left_top_window() {
-    scale([svg_scale, svg_scale, 0]) 
-    translate([163, -83.3])
-    import(file = "orig/crkbd-left-top-window.svg");
-}
-module crkbd_left_bottom() {
-    scale([svg_scale, svg_scale, 0]) 
-    translate([11.9, -136.8])
-    import(file = "orig/crkbd-left-bottom.svg");
-}
-module crkbd_expand_profile(expand = 4) {
-    offset(r = expand, chamfer = false, $fn = 40)
-    offset(delta = 1, chamfer = false, $fn = 40) // Delta gives sharp interiors
-    children();
-}
-module crkbd_outer_profile(expand = 4) {
-    crkbd_expand_profile(expand)
-    crkbd_left_bottom();
-}
 
 module simple_micro_usb_hole(hole = true) {
     color("silver") {
@@ -101,8 +69,8 @@ module crkbd_case_holes(preview = false) {
         }
     }
     if (preview) {
-        %color("green") translate([0, 0, plate_thickness - cherry_switch_depth - pcb_thickness])
-            linear_extrude(height = pcb_thickness, center = false, convexity = 3) crkbd_left_bottom();
+        %translate([0, 0, plate_thickness - cherry_switch_depth - pcb_thickness])
+            crkbd_pcb_assembly();
     }
 }
 
