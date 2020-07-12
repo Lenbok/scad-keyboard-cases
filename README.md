@@ -8,10 +8,10 @@ generated in OpenSCAD from scratch.
 
 When cloning, you need to make sure you get the submodules, e.g.:
 
-    git clone --recurse-submodules https://github.com/Lenbok/scad-redox-case.git
+    git clone --recurse-submodules https://github.com/Lenbok/scad-keyboard-cases.git
 
 
-## Modified Version Of The Original Case
+## Modified Version Of The Redox Case
 
 Have a look in [redox-rev0-mod](redox-rev0-mod) for my modification of
 the original handwire Redox case.
@@ -46,7 +46,22 @@ OpenSCAD that includes this along with `keyboard_case.scad`, e.g.:
 Then to make a case, you mostly just need to define a polygon describing the
 outer boundary of your desired case, a set of points for where to put
 case screw holes, and optional positions for tenting supports, and call
-the `top_case` and/or `bottom_case` modules. See the other cases here
-for examples (the Redox case is most developed):
+the `top_case` and/or `bottom_case` modules. 
 
-![redox-exploded](images/redox-exploded.png)
+See some of the cases here for examples:
+
+Redox:
+
+<img alt="redox exploded" src="images/redox-exploded.png" width="500">
+
+CRKBD (main shell is top half):
+
+<img alt="crkbd" src="images/corne-exploded.png" width="500">
+
+CRKBD "alternate" (hi-profile, main shell is lower half):
+
+<img alt="crkbd alternate" src="images/corne-alt.png" width="500">
+
+CRKBD "minimal" (here using bottom mount mcu and reset for low profile):
+
+<img alt="crkbd minimal" src="images/corne-minimal.png" width="500">
