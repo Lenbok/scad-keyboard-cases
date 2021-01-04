@@ -88,7 +88,7 @@ module crkbd_pcb_assembly(top_mount_mcu = true, top_mount_reset = true, top_moun
         translate([crkbd_pcb.x - crkbd_window_size.x / 2, 9 - crkbd_window_size.y, crkbd_pcb.z])
             for (i = [-30, 150])
             rotate([0, 0, i])
-                translate([crkbd_window_size.x / 2 - 1.4, 0, 0])
+                translate([crkbd_window_size.x / 2 - 1.7, 0, 0])
                 cylinder(r = 2, h = window_z, $fn = 6);
     }
 }
