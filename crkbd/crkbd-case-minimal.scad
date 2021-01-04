@@ -17,11 +17,12 @@ top_mount_reset = false;
 wall_thickness = 2.5;
 plate_thickness = 4;   // (5mm - max diode height)
 bottom_case_height = 0;
-window_z = top_mount_mcu ? 13 : 5.5;
+window_z = top_mount_mcu ? 13 : 6;
 battery_bay = false;
-battery_bay_size = [15, 66.5, 9];
+battery_bay_size = [66.5, 15, 9];
+battery_bay_offset = [-8, -mcu_size.y+0.5, 0];
 
-mcu_size = [19.9, 34.9, 13.2];  // Adjusted depth according to sockets etc
+mcu_size = [20.0, 35, 13.2];  // Adjusted depth according to sockets etc
 
 screw_rad = 2.2 / 2;
 screw_head_rad = 5.4 / 2;
@@ -31,7 +32,7 @@ screw_head_depth = 0;
 //standoff_rad = 4.0 / 2;
 bottom_screws = true; // Default is to screw down from the top
 
-tent_angle = 6;
+tent_angle = 8;
 
 micro_usb_hole_width = 14;
 micro_usb_hole_height = 8;
@@ -74,8 +75,10 @@ module crkbd_bottom_case() {
         translate([0, 0, 0]) {
             if (battery_bay) {
                 // Hole for lipo battery
-                translate([125, -94, -battery_bay_size.z+outer_height+0.01]) {
-                    roundedcube(battery_bay_size, r = 3, center = false);
+                translate(-crkbd_first_offset)
+                translate([crkbd_pcb.x - battery_bay_size.x, -battery_bay_size.y, -battery_bay_size.z + outer_height + 0.01])
+                translate(battery_bay_offset) {
+                    roundedcube(battery_bay_size, r = 1, center = false);
                 }
             }
             if (!top_mount_mcu) {
