@@ -49,10 +49,12 @@ module crkbd_encoder_mount() {
                             polyhole2d(r = 1.1);
             }
         }
-        // Cut out encoder footprint
         translate([0, 0, crkbd_pcb.z]) translate(-crkbd_first_offset) translate([crkbd_pcb.x, -crkbd_window_size.y]) {
+            // Cut out encoder footprint
             translate([-encoder_base_size.x/2 - crkbd_window_size.x/2, mount_y - encoder_base_size.y + 0.01, mount_thickness + 0.01])
                 translate(encoder_position_tweak) encoder_base_cutout();
+            // And a hole to make room for one of the reset switch pads
+            translate([-1.6, 18.6, -0.01]) cylinder(r = 1.1, h = 1.4, center = false);
         }
 
         // Standoff recesses
