@@ -32,7 +32,9 @@ screw_head_depth = 0;
 //standoff_rad = 4.0 / 2;
 bottom_screws = true; // Default is to screw down from the top
 
-tent_angle = 8;
+tent_angle = 10;
+
+hipro_height = 9.5;   // 0 for minimal, ~9.5 for flush, ~15 for hipro
 
 micro_usb_hole_width = 14;
 micro_usb_hole_height = 8;
@@ -50,26 +52,37 @@ module crkbd_bottom_case() {
     outer_height = 1.25;
     standoff = 2.2;
 
+    gap_offset = hipro_height == 0 ? 0 : 0.4;
+    outer_offset = hipro_height == 0 ? 0 : 2.5 + gap_offset;
+
+    outer_width = crkbd_pcb.x + 2 * outer_offset;
     min_inner_height = top_mount_mcu
         ? (battery_bay_size.z + wall_thickness)
         : battery_bay ? (battery_bay_size.z + wall_thickness)
         : outer_height;
-    min_angle = atan((min_inner_height - outer_height) / crkbd_pcb.x);
+    min_angle = atan((min_inner_height - outer_height) / outer_width);
     if (tent_angle < min_angle) {
         echo(str("WARNING: min_angle=", min_angle, " tent_angle=", tent_angle, " inner_height=", inner_height));
     }
 
-    inner_height = tan(tent_angle) * crkbd_pcb.x + outer_height;
+    inner_height = tan(tent_angle) * outer_width + outer_height;
     c = crkbd_first_offset + [0, 30, -inner_height + outer_height];
+
     rotate([0, tent_angle, 0]) translate([-c.x, -c.y, 0]) rotate([0, -tent_angle, 0]) translate([c.x, c.y, 0])
     difference() {
         translate([-c.x, -c.y, 0])
         difference() {
-            translate(c)
-                linear_extrude(height = inner_height, convexity = 3)
-                crkbd_left_bottom();
+            translate(c) difference() {
+                chamfer_extrude(height = inner_height + hipro_height, convexity = 3, faces = hipro_height == 0 ? "none" : "top")
+                    offset(r=outer_offset) crkbd_left_bottom();
+                if (hipro_height > 0) {
+                    translate([0, 0, inner_height])
+                        linear_extrude(height = hipro_height + 0.01, convexity = 3)
+                        offset(r = gap_offset) crkbd_left_bottom();
+                }
+            }
             rotate([0, tent_angle, 0])
-                translate([0, -100, -inner_height])
+                translate([-outer_offset-0.1, -100, -inner_height])
                 cube([crkbd_pcb.x * 2, 200, inner_height]);
         }
         translate([0, 0, 0]) {
@@ -86,11 +99,14 @@ module crkbd_bottom_case() {
                 translate(-crkbd_first_offset)
                 translate([crkbd_pcb.x - mcu_size.x + 0.01, -mcu_size.y, -mcu_size.z+outer_height+standoff]) {
                     cube(mcu_size, center = false);
+                    if (hipro_height > 0) {
+                        translate([2.5, 0, 0]) cube(mcu_size + [-5, 10, 0], center = false);
+                    }
                 }
             }
             if (!top_mount_reset) {
-                // Hole for reset access
-                reset_cutout = reset_size + [5, 3, 5];
+                // Hole for reset access, extend through bottom for hipro version
+                reset_cutout = reset_size + [2, 2, hipro_height == 0 ? 5 : 50];
                 translate(-crkbd_first_offset)
                 translate([crkbd_pcb.x - reset_cutout.x + 0.01, reset_y_off-reset_cutout.y/2, -reset_cutout.z+outer_height+standoff]) {
                     cube(reset_cutout, center = false);
