@@ -18,11 +18,19 @@ wall_thickness = 2.5;
 plate_thickness = 4;   // (5mm - max diode height)
 bottom_case_height = 0;
 window_z = top_mount_mcu ? 13 : 6;
-battery_bay = false;
-battery_bay_size = [66.5, 15, 9];
-battery_bay_offset = [-8, -mcu_size.y+0.5, 0];
 
 mcu_size = [20.0, 35, 13.2];  // Adjusted depth according to sockets etc
+
+battery_bay = 0; // 0 for one, else the index of one of the entries below for various size batteries
+battery_bays = [
+                /* Hole size, Offset */
+                [], /* Dummy entry */
+                [[66.5, 15, 9], [-8, -mcu_size.y+0.5, 0]], /* (551148 helicopter batteries, 55mm x 11mm x 4.8mm, 200mAh) */
+                [[56, 33, 9], [-mcu_size.x+4.5, -mcu_size.y/2-1.4, 0]] /* (403048 lipo, 40mm x 30mm x 4.8mm, 600mAh) */
+                ];
+
+battery_bay_size = battery_bays[battery_bay][0];
+battery_bay_offset = battery_bays[battery_bay][1];
 
 screw_rad = 2.2 / 2;
 screw_head_rad = 5.4 / 2;
