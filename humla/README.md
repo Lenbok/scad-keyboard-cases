@@ -16,7 +16,7 @@ At the moment, the case does not attach with screws, it just fits snugly.
 ### "Laptop Adaptor" case
 
 Since one use case when building this keyboard was as an comfortable
-alternative to the keyboard built-in to my work laptop (a HP Zenbook), this
+alternative to the keyboard built-in to my work laptop (a HP ZBook Firefly), this
 case is an adaptor that lets the humla sit over the top of the laptop
 keyboard. Recesses corresponding to the laptop keys keep the humla positioned.
 

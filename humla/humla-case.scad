@@ -5,9 +5,9 @@
 // - A simple bumper case.
 //
 // - A case that includes an adaptor that lets the humla sit nicely over the
-//   top of the existing keyboard of my hp zenbook laptop.
+//   top of the existing keyboard of my hp zbook laptop.
 
-include <kle/hp-zenbook.scad>
+include <kle/hp-zbook.scad>
 include <../keyboard-case.scad>
 
 $fa = 0.5;
@@ -15,7 +15,7 @@ $fs = $preview ? 5 : 1;
 
 eps = 0.01;
 
-// Parameters for the hp zenbook keyboard for the adaptor
+// Parameters for the hp zbook keyboard for the adaptor
 hp_key_depth = 1.3;
 hp_channel_width = 2.5;
 unit = 18.68;  // hp key spacing
@@ -28,7 +28,7 @@ case_thickness = base_thickness + humla_thickness;
 
 
 // 2d profile of the humla PCB. SVG extracted from kicad and painfully manipulated into something OpenSCAD could load
-// This is also translated to overlap nicely with where the hp-zenbook keyboard will be
+// This is also translated to overlap nicely with where the hp-zbook keyboard will be
 module humla_pcb() {
     translate(v = [31, -107.5, 0]) resize([210, 0, 0],  auto = true) import(file = "orig/humla-base-plate-outline.svg");
 }
@@ -50,7 +50,7 @@ module mcu_switch_cutout() {
     translate(v = [111.5, -34.3, -eps])  rotate([0, 0, -13]) translate(v = [-outer_thickness/2 - pcb_tol, 0, 4]) cube([outer_thickness, 12, 10], center = true);
 }
 
-// A plate containing cutouts corresponding to the hp-zenbook key positions. This will position the humla
+// A plate containing cutouts corresponding to the hp-zbook key positions. This will position the humla
 // and stop it sliding around
 module laptop_keyboard_adaptor_plate() {
     difference() {
@@ -58,7 +58,7 @@ module laptop_keyboard_adaptor_plate() {
             // Laptop key cutouts
             linear_extrude(height = hp_key_depth, center = false, convexity = 10, twist = 0, slices = 20, scale = 1.0) difference() {
                 offset(r = outer_thickness, chamfer = false) humla_pcb();
-                key_holes(hp_zenbook, type = "plate");
+                key_holes(hp_zbook, type = "plate");
             }
             // base plate
             translate(v = [0, 0, hp_key_depth - eps]) {
