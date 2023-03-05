@@ -29,8 +29,11 @@ case_thickness = base_thickness + humla_thickness;
 
 // 2d profile of the humla PCB. SVG extracted from kicad and painfully manipulated into something OpenSCAD could load
 // This is also translated to overlap nicely with where the hp-zbook keyboard will be
-module humla_pcb() {
+module humla_pcb(mcu_extra = false) {
     translate(v = [31, -107.5, 0]) resize([210, 0, 0],  auto = true) import(file = "orig/humla-base-plate-outline.svg");
+    if (mcu_extra) {
+        mcu_switch_profile();
+    }
 }
 
 module case_key_hole(size) {
@@ -45,9 +48,15 @@ module key_holes(keys, type = "both") {
     }
 }
 
+module mcu_switch_position() {
+    translate(v = [111.5, -34.3, 0])  rotate([0, 0, -13]) children();
+}
+module mcu_switch_profile() {
+    mcu_switch_position() translate(v = [0, -0.5]) square([4, 12], center = true);
+}
 // Rebate for access to MCU on/off switch
 module mcu_switch_cutout() {
-    translate(v = [111.5, -34.3, -eps])  rotate([0, 0, -13]) translate(v = [-outer_thickness/2 - pcb_tol, 0, 4]) cube([outer_thickness, 12, 10], center = true);
+    mcu_switch_position() translate(v = [-outer_thickness/2 - pcb_tol, 0, 4 - eps]) cube([outer_thickness, 12, 10], center = true);
 }
 
 // A plate containing cutouts corresponding to the hp-zbook key positions. This will position the humla
@@ -88,17 +97,42 @@ module humla_bumper_case() {
     }
 }
 
+module bumper_case_case() {
+    top_case_clearance = 18.5;
+    difference() {
+        chamfer_extrude(height = top_case_clearance + outer_thickness, faces = "top") {
+            offset(r = outer_thickness * 2, chamfer = false) humla_pcb();
+        }
+        translate(v = [0, 0, -eps]) chamfer_extrude(height = case_thickness + base_thickness, faces = "top") {
+            offset(r = outer_thickness + pcb_tol, chamfer = false) humla_pcb();
+        }
+        translate(v = [0, 0, base_thickness]) {
+            linear_extrude(height = top_case_clearance, center = false, convexity = 10, twist = 0, slices = 20, scale = 1.0) {
+                offset(delta = pcb_tol, chamfer = false) humla_pcb(true);
+            }
+        }
+        translate(v = [0, 0, -eps]) chamfer_extrude(height = case_thickness + base_thickness + 1, faces = "top") {
+            translate(v = [0, -70]) square(size = [300, 20], center = false);
+        }
+    }
+}
+
 part = "bumper-case";
 explode = 1;
 if (part == "laptop-adaptor") {
     laptop_keyboard_adaptor_plate();
+} else if (part == "profile") {
+    humla_pcb(true);
 } else if (part == "bumper-case") {
     humla_bumper_case();
+} else if (part == "bumper-case-case") {
+    bumper_case_case();
 } else if (part == "assembled") {
     color("silver") laptop_keyboard_adaptor_plate();
     translate(v = [0, 0, base_thickness]) {
         color("red") humla_bumper_case();
-        //translate(v = [0, 0, hp_key_depth + case_thickness - 1]) color("#222222") linear_extrude(height = 1) humla_pcb();
+        translate(v = [0, 0, hp_key_depth + case_thickness - 1]) color("#222222") linear_extrude(height = 1) humla_pcb();
+        translate(v = [0, 0, 20]) bumper_case_case();
     }
  }
 
